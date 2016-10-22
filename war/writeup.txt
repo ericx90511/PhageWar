@@ -1,0 +1,538 @@
+================================================================================
+Computer Science 1901 - Fall 2013 - University of Minnesota
+         Final Course Project
+================================================================================
+
+ASSIGNMENT SUBMISSION:
+================================================================================
+  Due Friday, December 6th, at or before 11:55pm,
+  Via electronic submission using Moodle
+  Format:  Scheme Source Code File
+           Use random.scm as a template for your submission.
+           Name of file must be [x500 account of person submitting].scm
+             <For example:  shor0090.scm >
+           If working in a group, only one person should submit the file.
+           Complete the header information at the top of the file with 
+           information for you and your partner.
+
+  Requirements:
+    Submission must run on MIT Scheme on one of the CSELabs computers in 
+      room 1-260.
+      
+    If you develop the code using another Scheme interpreter (such as Dr Scheme)
+      OR on a computer not on the CSELabs network (such as your laptop or home
+      computer), OR on a computer running a different version of MIT Scheme 
+      relative to Keller 1-260, you are expected to ensure it runs using MIT 
+      Scheme on a CSELabs machine.
+
+    Only one submission is allowed per group. You may resubmit multiple times
+      prior to the due date (in order to fix a bug, enhance your submission,
+      etc.), but the last submission made before the due date will be used for 
+      grading.
+
+INSTRUCTIONS:
+================================================================================
+Collaboration:
+  Project may be worked on in groups of two or done individually.
+
+  General discussion is allowed, however, no sharing of code (including code
+    written in Scheme, pseudo-code, or verbal) is allowed between groups.
+
+  Use of ANY code not written by you or your group is forbidden, except you 
+    may use code from your lab, lecture or from the book, as long as you cite 
+    the source. You can use code from any provided project file without 
+    citation.  This includes all files listed in the "files" section below.
+
+  If you have questions regarding any of these policies, contact a TA for
+    clarification.
+
+Obtaining Help:
+  The TAs are available to answer questions regarding the project during their
+    normally scheduled office hours. You can also email the TA alias 
+    1901TAs@cs.umn.edu. General questions about the project such 
+    as clarification of expectations, submission instructions, and how some of 
+    the provided code works can be addressed during lab sessions, however, TAs 
+    will not provide help on specific problems during lab time so that they are
+    available to assist with the current lab assignment.
+
+Source Code:
+  All procedures you write should:
+    +be properly spaced (including line breaks and indentation) for readability.
+    +be commented in such a way that explains your methodology.
+
+Test Cases:
+  You do not need to submit any test cases.
+  You should make sure that your submission runs reliably, without error, and 
+    returns valid moves in all cases. Submissions that generate errors will 
+    be marked down heavily and are difficult to score against grading standards.
+
+ADDITIONAL DETAILS:
+================================================================================
+File Header Format:
+  The header format for your submitted Scheme file is included in the random.scm 
+    file. Be sure to fill in your information as shown.
+
+
+================================================================================
+Project Overview
+================================================================================
+Purpose:
+  The purpose of the project is to give you a chance to work on a significant
+    (and hopefully enjoyable) programming assignment that incorporates much of
+    the knowledge and skill you have learned throughout the course.
+
+Overview:
+  The goal of this assignment is for you to write Scheme 
+    code to play one player's part in a game called "PhageWars++". PhageWars++
+    is based on a popular online real-time strategy game, Phage Wars.
+    PhageWars++ is a two-person game involving a number of cells placed on a
+    rectangular board. Each cell is owned by one of the players, or may begin
+    the game without an owner. The goal of the game is for one player to 
+    eliminate all cells owned by the other player.
+
+    Many parts of this game are already written, and it is already playable by
+    humans. Your task is to write an AI player, which examines the board data
+    and makes strategic moves each turn in an attempt to win the game.
+
+    The remainder of this file contains details about the rules of the game,
+    the referee code, and how your code will be graded.  
+
+
+Files:
+  Here is a list and explanation of the files supplied for this
+    project.  You should copy, rename, and modify the random.scm file
+    below; This is where you should write your player code. The other
+    files mentioned here are files containing referee or informational
+    code. You do not need to understand all these other files in detail, and
+    should not modify them. However, as explained below, these other files
+    contain some information, such as data formats or information accessors,
+    and you may need to use these functions when writing your player code.
+    If you want to MODIFY any of the code in the following files, copy it into
+    your AI file with a new name, as we will not use your copy of these files.
+    You should not need to copy any functions from these files to make calls 
+    with them in your AI.
+
+  PhageWars++.scm -- This file contains the "referee" code that keeps track of 
+    the current status of the board and queue, and gets moves from each player. 
+    It also handles the displaying of the board and checks against illegal 
+    moves. It will call your player-procedure with a copy of the current board 
+    and wait for your move to be returned.
+
+    Also included in this file are constants that specify game parameters. You
+    will be able to read these values from within your file. Generally, these
+    are denoted between asterisks, such as *BOARD-WIDTH*.
+    
+    Finally, when PhageWars++.scm is loaded into scheme, all of the following
+    files are also loaded.  You only need to load PhageWars++.scm to play the 
+    game.
+
+  help.scm -- This file contains all of the game-specific helper code used by
+    PhageWars++.scm. Nearly everything you might want to interact with the board
+    and queue, create/use abstractions, and to lookup information on the state 
+    of the game is there. 
+
+    PhageWars++ loads this file, so you will have access to these procedures 
+    through the global environment.
+
+  util.scm -- This file contains general utility functions. These procedures are 
+    occasionally used by the referee, but are much more generalized than the 
+    procedures in help.scm - they are not game-specific.
+
+    PhageWars++.scm loads this file, so you will have access to these procedures 
+    through the global environment.
+
+  maps.scm -- This file contains map and board data, and corresponds to the map
+    selection preferences in PhageWars++. The map options are versatile, and 
+    are intended for customization should you so choose. Ideally, they may be
+    customized as a tool for testing your AI's functionality. 
+
+    PhageWars++.scm loads this file, so you will have access to all the maps
+    defined herein through the global environment.
+
+  random.scm -- This file is a very simple player that makes a single move at 
+    random. You should copy / rename this file and use it as a template for your
+    code. All code you write should be inside the player-procedure definition
+    provided by random.scm. 
+
+    random.scm, as well as any other specified player procedure, is loaded
+    when you pass the filename in as an argument to the "play-game" procedure.
+
+
+
+Description and Rules
+================================================================================
+Game Overview:  
+  PhageWars++ is an adaptation of a series of online real-time strategy games,
+    most commonly recognized under the title Phage Wars. In this game, there 
+    exists a board which contains several numbered cells. Each cell has an 
+    owner, either Player 1, Player 2, or Neutral (not yet owned). The goal of
+    the game is for one player to eliminate all of the cells owned by the other 
+    player. On each turn, players will be asked to make at most one move for 
+    each of their cells. Then, the game will process the moves made by each
+    player, based on the board layout. Finally, each cell owned by a player is 
+    given more units based on its cell growth (explained below), and the cycle 
+    repeats.
+
+
+Rules:
+  There are two players, player 1 and player 2. Each player can either be a
+    human or an AI. For the game, there exists a board which is populated with 
+    cells, and a priority queue which is used to track and display moves as they
+    travel across the board.
+
+The Game Cycle:
+  Each turn consists of four steps, which are repeated until a winner is 
+    declared. Each step of the game is outlined below:
+
+    -Both players are given a copy of the board and queue, and return a
+       list of moves they would like to make on this turn.
+    -Both lists of moves are integrated into the queue, based on the distance
+       each move must travel to reach its destination.
+    -The queue is advanced, based on the movement speed of the map. Any moves
+       that reach their destination attack or reinforce that cell, based on 
+       distance traveled and the order in the queue.
+    -All cells owned by players are given more units, based on their income
+       and their actions in the previous turn.
+
+
+The Board:
+  All boards are specified by a map, explained in the maps.scm file.  Each board
+    has a set height and width, which vary between the different maps.
+    Initially, the board is typically populated with one cell (sometimes 
+    multiple cells) owned by each player, and several neutral cells.  The cell 
+    information may also vary between maps.  Each cell also has a unit count, 
+    and a value representing income. As the game progresses, the cells will 
+    change owners and unit count.
+
+  The following board segment contains three cells, labeled C1, C2 and C3 (when
+    interacting with the board, they are simply 1 2 and 3). C1 is owned by 
+    player 1, and contains 29 units. Each turn, 5 units are added to that unit 
+    count. C2 is owned by player 2, only has 23 units, but again adds 5 units 
+    per turn. C3 is also owned by player 2, contains 29 units, but only has a 
+    growth of 3 units per turn.
+
+        *-------*       *       *       *
+        | C1:+5 |                        
+        | P1:29 |                        
+        *-------*       *       *-------*
+                                | C2:+5 |
+                                | P2:23 |
+        *       *       *       *-------*
+                          06:C2          
+                            P2           
+        *-------*       *       *       *
+        | C3:+3 |                        
+        | P2:29 |                        
+        *-------*       *       *       *
+
+  There is also a displayed move on the board. This move is shown as the 
+    borderless set of characters. This move is heading towards cell 2, contains
+    6 units, and is owned by player 2. Moves displayed on the board are 
+    estimations based on distance, designed to give human players and observers
+    a "feel" for the current game state. For accurate information, the queue 
+    should always be used as the point of reference. Your AIs will use the queue
+    to obtain information about all the moves currently in play, as they cannot 
+    access the moves displayed on the board.
+
+
+The Queue:
+  The queue for the game is more of a sorted list. After both players' moves
+    are collected by the referee, they are inserted into the queue based on the 
+    distance they must travel between cells. The "front" of the queue has moves
+    which have the smallest distance left to travel, while the last items in
+    the queue have the longest distance left to travel. Moves submitted by the
+    player have been tagged 'move, while moves in the queue have the 
+    'queued-move tag.
+
+        Example:
+        .=Queue==================================================Speed: 2=.
+        |  08:C5 | 08:C2 | 06:C6 | 06:C2 |                                |
+        |  P1:01 | P2:01 | P1:01 | P2:02 |                                |
+        `=Enrage: 1.0============================================Turn: 3==`
+
+  This queue contains four moves. The first number (08, 08, 06, 06) is the 
+    number of units being sent with that move. The second value on the top line 
+    is the destination cell of the move. The first value on the second line is 
+    the player who sent the move, and the last value in the bottom right is the 
+    number of turns until that move is executed. When moves are executed, they 
+    do so in the order listed in the queue. Thus, the first move to be executed 
+    would be against cell 5, then the move against cell two, and finally the 
+    move against cell 6.
+
+  On the next turn, the queue may look like this:
+        .=Queue==================================================Speed: 2=.
+        |  06:C2 |  05:C3 |                                               |
+        |  P2:01 |  P1:03 |                                               |
+        `=Enrage: 1.0============================================Turn: 4==`
+
+  The first three moves from the first queue were executed, while the fourth 
+    move has only one turn remaining. Player one added a move to the queue, 
+    sending 5 units to cell 3. Unfortunately, it will take three turns until 
+    this new move reaches its destination.
+
+  Note that the queue displays some other useful information, such as the 
+    "enrage" modifier, the board speed (squares per turn), and the current turn.
+    These values are also readily available to any AI player, and are discussed
+    in detail below.
+
+Making Moves:
+  On each turn, your AI will be prompted to return a list of moves. This 
+    list can be any set of possible moves from the empty list to as many as 
+    one move from each cell you own. The format for moves is described in 
+    the help file. If your AI returns multiple moves with the same origin cell,
+    it will be considered an invalid move and you will lose the game.
+    An example of a legitimate return value on a board where your player 
+    controls cell 1, and there is a cell 2, would be made with:
+    (list (make-move 1 2))
+    Note that even if you make no moves (all owned cells defend), you should
+    return an empty list.
+
+Distance and Board Spacing:
+  Distance on the board is calculated with standard geometry, so a cell at 
+    (1, 1) attacking a cell at (4, 5), will have it's units travel a distance of
+    (sqrt (+ (square (- 1 4)) (square (- 1 5)))), or (sqrt (+ 9 16)), or 5.
+    Thus, if the move-speed for the map is 3, it will arrive on the second turn
+    after making the move.
+
+Reinforcement:
+  Not only can cells you own attack other cells, but they can also send half 
+    their unit count to a cell you control. This is useful in preventing your
+    opponent from taking a cell you own (if you anticipate or see the attack), 
+    which denies them even a single turn of growing more units.
+
+Unit Growth
+  As was previously mentioned, each cell has an income value (represented 
+    with a "+" prefixing a number) which tells players how many units they will
+    receive during a growth phase. 
+
+  If the owner of a cell decides not to send units from it, it will gain a few 
+    extra units for defending.  The defenders bonus will always be 2 units, but
+    your AI can read this value as a board variable.
+
+Map Constants:
+  Aside from board and queue initialization, maps can specify several other
+    pieces of information. Map formatting is described in maps.scm, however a
+    few useful pieces of information are mentioned below.
+      -Move Speed is specified by each map, or it is set to a default.
+      -Enrage data is specified by each map, or it is set to a default.
+      -The growth rate of each cell is specified by the initial board.
+
+Enrage Timers:
+  One interesting addition to the game is the idea of a gradual "enrage timer."
+    Displayed on the board, and easily accessible through the help files, the
+    enrage value is a number which is multiplied to all dispatched units. 
+
+  The typical setup for an enrage value is to increase the outgoing unit count 
+    by 10% every 10 turns. What this means for your AI is that when you attack 
+    an enemy cell, it sends 110% of the cells normally sent, without losing 10% 
+    more of your defenders. In a sense, it's like getting free units to attack.
+    This exists for maps so that there is no "stalemate" situation between two 
+    AIs - eventually, the enrage bonus will get high enough that most attacks
+    will be extremely hard, if not impossible to defend against. This typically
+    takes several turns, possibly stretching into the hundreds.
+
+  Note - While the enrage bonus is applied when a move is put in the queue, if
+    the targeted cell ends up being controlled by the same player (i.e. the 
+    player is reinforcing one of their cells), the enrage bonus will be removed.
+    Thus, players cannot take advantage of this to artificially inflate their 
+    own cells.
+
+Time Limit:
+  Players must return moves in a timely fashion to avoid delay-of-game
+    forfeiture. The time limit for each player on each turn will be no less than
+    two seconds, but may be increased for maps containing many cells. 
+
+  If your AI exceeds this limit, you will lose some points for the grading. 
+
+  Exceeding this limit during the round-robin qualifiers for the tournament will
+    disqualify you from the tournament, REGARDLESS of how well your AI does.
+    Exceeding this limit during the tournament will also result in immediate 
+    disqualification. 
+
+  You are encouraged to emphasize strategy, as opposed to spending lots of time 
+    generating a game tree of possible moves and responses. AIs that work by 
+    attempting to predict many possible moves for future turns are time 
+    consuming, and the time limit exists to both discourage this type of AI, and
+    to keep the game moving.
+
+Maps and Variations:
+  The provided maps are all "standard" maps which you may see in the tournament 
+    and for grading. We may run other maps for grading or for the tournament, 
+    so do not build an AI to ONLY run on these maps. However, the board layout 
+    concepts provided by the given 'map pack' should illustrate several 
+    variations which will be found in the final selection of maps.
+
+Writing Your Code:
+  To do this project you do NOT need to understand the referee code in
+    'PhageWars++.scm' (However, understanding the game code may help you write
+    your own procedures.)  Your job is to write just a player-procedure. Your 
+    procedure will be called by, but be independent of, the referee code. This 
+    means your code will not have access to any of the referee code's local 
+    procedures or local data, and vice versa. We suggest that you begin by using
+    the random player code and some of the procedures found in help.scm and 
+    util.scm files.
+
+  Any additional procedures you write must be made local to (i.e., nested 
+    inside) your player-procedure. You are also free to use any of the code from
+    the text, from the class web page, or from your own previous assignments.
+    But, for any code you reuse you must include comments indicating the source 
+    of the code. A reminder, the ONLY file you will submit is your x500.scm 
+    file. This means that any modifications to any other file (help, maps, etc) 
+    will not be available to your AI when we begin running your code.
+
+
+Running the Game (Referee):
+  The game can be set up for 2 human players, 2 computer players, or 1 of each 
+    with the computer being either the first or second player. The first player 
+    procedure loaded becomes Player 1. After loading "PhageWars++.scm" into 
+    Scheme, you can start the game with any combination of human and computer 
+    players using (play-game ...). Some examples follow:
+    
+      (play-game 'human 'human) will start PhageWars++ with two interactive 
+        players.
+
+      (play-game "random.scm" 'human) will start PhageWars++ with Player 1 as 
+        the computer random player found in file "random.scm" and an 
+        interactive, human player for Player 2.
+
+      (play-game "yourcode.scm" "random.scm") will start PhageWars++ with
+        Player 1 as the player-procedure your wrote found in a file named
+        "yourcode.scm" and Player 2 as the random player procedure.
+
+  Note that the player procedures should be in the same directory where you are 
+    running PhageWars++.scm.  You should only need to load PhageWars++.scm 
+    before calling (play-game x y) - PhageWars++.scm will load all needed helper
+    files.
+
+
+Collaboration and working in groups:
+  You are permitted and encouraged to work in groups of 2 on this assignment. 
+    You are also allowed to work alone, but groups of 3 or more are strictly 
+    prohibited.
+
+  Remember that misconduct such as copying code (from anyone else if you are 
+    working individually, from anyone outside your group if you are working in a
+    group) or giving others copies of your code is a grave situation and will 
+    have serious repercussions. 
+
+  It is your responsibility to protect your code. If your code is available in 
+    any way publicly, or to anyone outside of your group, you will face similar 
+    consequences to those who used your code. This includes posting code online 
+    without a password or sharing passwords, leaving an open repository or using
+    pastey sites, or any other unforeseen situation where others are able to 
+    access your code.
+
+
+Grading:
+  100 Points total, with possible extra credit, as follows:
+    30 points - your player-procedure makes all legal moves, without crashing, 
+                  for the duration of each game. You do not have to win a game 
+                  to receive these points.
+
+    30 points - organization, style, and apparent effort. Your code will be read
+                  as part of the grading process. Please keep it neat and 
+                  understandable.
+
+    40 points - performance against benchmark computer players in a variety of
+                  trials (for example, against a random player, against a 
+                  challenging offensive player).
+
+
+  One thing to keep in mind is that it is extremely difficult to grade an AI 
+    which cannot complete a game, so while 30 points are directly related to 
+    stability, the performance grade will also suffer if your AI is crashing. It
+    is better to submit a slightly less intelligent AI which never crashes. You 
+    are encouraged to make frequent backups of your code throughout the 
+    development process as a result of this.
+	
+  Do not submit the provided random.scm as your AI. Only submit your-x500.scm, 
+    and not the other given files, such as help.scm.
+
+  ALWAYS test your code on the CS-1260 machines, either through SSH or by coming 
+    in to the lab. We will be grading them on these machines, so the best way to
+    ensure there are no version inconsistencies is to test your AI on them.
+
+  Any AI which attempts to subvert the referee program or access their 
+    opponent's AI for any reason will receive a severely reduced grade. If you 
+    think your AI may be subverting the referee, or may be doing something
+    inappropriate, please ask a TA instead of risking a 0 on the project. 
+
+
+Class Tournament:
+  Tournament participants will be chosen with a round-robin competition within
+    each section, facilitated by the TAs. Top finishers from these play-offs 
+    will move on to a championship tournament in lecture. There will be a 
+    separate tournament for the day and the evening lectures. Dates will be 
+    announced in lecture and on the schedule when they have been set.
+
+  Success in the tournament is completely separate from the grade you get on
+    this project. Specifically, based on evidence of good effort, programming 
+    style, and the other grading criteria given above, you can get a top grade 
+    regardless of how your program does against other AIs. Your AI only gets
+    bonus points for "being in the tournament" if it makes it to the in-lecture
+    tournament.
+
+  Bonus points will be awarded as follows:
+    First place in the class tournament - 20 bonus points.
+    Second place in the class tournament - 16 bonus points.
+    Third place in the class tournament - 13 bonus points.
+    Taking part in the class tournament - 10 bonus points.
+
+  Other points, described below:
+    Debugging - Up to 5 points.
+    Map Submission - Up to 2 points.
+
+  If you work in a group of 2, *both* players will get the same score for the 
+    project, including bonus points.
+
+  Participation in the tournament (if selected) is not mandatory, but groups 
+    that are not interested for any reason must contact the TAs via email at or 
+    before the project due date.
+
+  Late submissions, regardless of the skill of the AI, will not be eligible to 
+    participate in the tournament.
+
+
+Bugs:
+  Despite extensive testing and preparation, this is the first semester we have 
+    used PhageWars++ as the game for 1901. As such, there may still be some bugs
+    in the code. If you find any bugs in one of the files provided, please email
+    the TA alias (1901TAs@cs.umn.edu) with as much information 
+    about the bug as you can provide. Groups that help us find bugs may be 
+    eligible up to 5 extra credit points, at the discretion of the TAs. Only the
+    first group to notify us will be considered for these points. You will not 
+    be notified about the amount of points until final project grades become 
+    available. Please don't hesitate to send us more debug information if you 
+    come across a second bug.
+
+  Helping us with bugs ensures you get the most fair and accurate grading, and 
+    helps both your class and any future classes who use this project.
+
+Submitting Maps:
+  If you develop a map that you would like to share, it might be included in 
+    the testing code or the tournament.  Please check the website for additional
+    information regarding map creation guidelines and tips.
+
+  An acceptable and interesting map submission may earn you as many as two bonus
+    points. You are allowed to submit multiple maps, but you will receive at 
+    most two points.
+
+  If your map is used in the grading or tournament, you WILL be awarded bonus
+    points. Other maps may still receive extra credit. 
+    
+  Submitted maps will be accepted completely at the discretion of the TAs 
+    managing the project.  Submit all maps to the TAs via email 
+    as explained in the FAQ page for the project.
+
+
+Developer Information and Credits:
+  This game is modeled after a popular online flash game, Phage Wars. Phage Wars
+    was developed by Joey Betz. All credit regarding the inspiration of 
+    PhageWars++, including the naming, rules and initial concepts comes from 
+    Joey's Phage Wars game. It has been dramatically altered in the process of 
+    creating and editing it to its current state; however none of this would 
+    have been possible without Joey's game.
+
+  PhageWars++ was developed by Kenny Shores at the University of Minnesota for 
+    the CSCI 1901 course. It was written during the Fall semester of 2010.
+
